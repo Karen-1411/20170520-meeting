@@ -1,0 +1,200 @@
+Option Explicit
+
+Sub inputsalary()
+
+    Dim j, i, k As Integer
+    Dim rcountraw, salarymonth, rcountall, employeenumraw, endrowraw, itemnumall, itemnumraw, employeenumall As Integer
+'   rcountraw:薪資單工作表列數, salarymonth:薪資單月份, rcountall:ALL工作表列數(姓名欄), employeenumraw:薪資單員工姓名列數
+'   endrowraw:薪資單項目輸入最後一欄，以"實領合計"為標的, itemnumall:ALL工作表薪資項目欄數, itennumraw:薪資單薪資項目欄數,
+'   employeenumall：ALL工作表員工姓名列數
+    Dim employeestr, itemstr, a As String
+'   employeestr:員工姓名, itemstr:項目
+
+    rcountraw = 1200 '自行輸入薪資單工作表列數
+    salarymonth = 1 '自行輸入檔案資料月份
+    
+    rcountall = Sheets("ALL").Cells(Rows.Count, 1).End(xlUp).Row
+
+    '薪資單工作表逐列搜尋"G"欄
+    For j = 1 To rcountraw Step 1
+
+        '以"金額"為每一個薪資單的標的
+        If Sheets(salarymonth & "月份").Cells(j, 7).Value = "金額" Then
+
+            employeenumraw = j - 1 '記錄薪資單工作表員工姓名列數
+            employeestr = Sheets(salarymonth & "月份").Cells(employeenumraw, 7).Value '紀錄員工姓名
+
+            '在"ALL"工作表中找到員工姓名列數
+            For i = 4 To rcountall Step 1
+
+                If employeestr = Sheets("ALL").Cells(i, 1).Value Then
+                    employeenumall = i
+                    Exit For
+                ElseIf i = rcountall Then
+                    MsgBox "找不到" & Sheets(salarymonth & "月份").Cells(employeenumraw, 7).Value & "這個人？"
+                End If
+
+            Next
+
+            '以薪資單"B"欄的"實領合計"為項目最尾端標的
+            i = j
+            Do
+            i = i + 1
+            Loop Until Sheets(salarymonth & "月份").Cells(i, 2).Value = "實領合計"
+            endrowraw = i
+
+
+            For i = j + 1 To endrowraw Step 1
+
+                itemstr = Sheets(salarymonth & "月份").Cells(i, 2).Value
+
+                If itemstr <> "" Then
+
+                    Select Case True
+                    Case itemstr Like "薪  資"  '才藝老師鐘點費
+                        k = 23
+                    Case itemstr Like "基本底薪*"
+                        k = 3
+                    Case itemstr Like "敬業獎金"
+                        k = 4
+                    Case itemstr Like "全勤獎金"
+                        k = 5
+                    Case itemstr Like "競業限制補償"
+                        k = 6
+                    Case itemstr Like "交通補助金"
+                        k = 7
+                    Case itemstr Like "預支三節獎金"
+                        k = 8
+                    Case itemstr Like "安全獎金"
+                        k = 9
+                    Case itemstr Like "專業津貼"
+                        k = 10
+                    Case itemstr Like "帶班津貼"
+                        k = 11
+                    Case itemstr Like "*介紹*"
+                        k = 12
+                    Case itemstr Like "*車津貼"
+                        k = 13
+                    Case itemstr Like "值班津貼"
+                        k = 14
+                    Case itemstr Like "職務*"
+                        k = 15
+                    Case itemstr Like "新生*"
+                        k = 16
+                    Case itemstr Like "團體成長獎金"
+                        k = 17
+                    Case itemstr Like "個人成長獎金"
+                        k = 18
+                    Case itemstr Like "退休提撥金"
+                        k = 19
+                    Case itemstr Like "休假抵現"
+                        k = 20
+                    Case itemstr Like "假單抵現"
+                        k = 20
+                    Case itemstr Like "超時津貼"
+                        k = 21
+                    Case itemstr Like "人數*"
+                        k = 22
+                    Case itemstr Like "鐘點費"
+                        k = 23
+                    Case itemstr Like "經營績效獎金"
+                        k = 24
+                    Case itemstr Like "其*"
+                        k = 25
+                    Case itemstr Like "小計"
+                        k = 26
+                    Case itemstr Like "小          計"
+                        k = 26
+                    Case itemstr Like "合         計"
+                        k = 26
+                    Case itemstr Like "實領合計"
+                        k = 41
+                    Case Else
+                        MsgBox "沒有" & itemstr & "這個項目！"
+                    End Select
+
+                    itemnumall = k
+                    itemnumraw = i
+
+                    On Error Resume Next
+
+                    Sheets("ALL").Cells(employeenumall, itemnumall).Value = Sheets("ALL").Cells(employeenumall, itemnumall).Value + Sheets(salarymonth & "月份").Cells(itemnumraw, 4).Value
+
+                    On Error GoTo 0
+                    
+                    itemnumall = 0: itemnumraw = 0: k = 0
+
+                End If
+
+            Next
+
+            itemnumall = 0: itemnumraw = 0: itemstr = "": k = 0
+
+            For i = j + 1 To endrowraw Step 1
+
+                itemstr = Sheets(salarymonth & "月份").Cells(i, 5).Value
+
+                If itemstr <> "" And itemstr <> "  " Then
+
+                    Select Case True
+                    Case itemstr Like "健保"
+                        k = 27
+                    Case itemstr Like "勞保"
+                        k = 28
+                    Case itemstr Like "退休提撥金"
+                        k = 29
+                    Case itemstr Like "遲到*"
+                        k = 30
+                    Case itemstr Like "流失減薪"
+                        k = 31
+                    Case itemstr Like "請假*"
+                        k = 32
+                    Case itemstr Like "病假減薪"
+                        k = 33
+                    Case itemstr Like "事假減薪"
+                        k = 34
+                    Case itemstr Like "休假減薪"
+                        k = 35
+                    Case itemstr Like "借支還款*"
+                        k = 36
+                    Case itemstr Like "薪資抵學費*"
+                        k = 37
+                    Case itemstr Like "預支薪資"
+                        k = 38
+                    Case itemstr Like "其*"
+                        k = 39
+                    Case itemstr Like "小計"
+                        k = 40
+                    Case Else
+                        MsgBox "沒有" & itemstr & "這個項目！"
+                    End Select
+
+                    itemnumall = k
+                    itemnumraw = i
+    
+                    On Error Resume Next
+    
+                    Sheets("ALL").Cells(employeenumall, itemnumall).Value = Sheets("ALL").Cells(employeenumall, itemnumall).Value + Sheets(salarymonth & "月份").Cells(itemnumraw, 7).Value
+    
+                    On Error GoTo 0
+                    
+                    itemnumall = 0: itemnumraw = 0: k = 0
+                
+                End If
+
+            Next
+
+        End If
+
+        employeenumraw = 0: employeenumall = 0: endrowraw = 0: itemnumall = 0:
+
+itemnumraw = 0
+        employeestr = "": itemstr = ""
+
+    Next
+
+End Sub
+
+
+
+
