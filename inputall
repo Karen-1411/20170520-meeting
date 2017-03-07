@@ -1,0 +1,41 @@
+'將整年的項目依據分類放到"All"sheet
+Sub inputall()
+
+    Dim rcount, ccountall, rcountall As Integer
+    Dim j, i, k, x, y, workyear As Integer
+    
+    workyear = 104
+    
+    For y = 1 To 12 Step 1
+    
+        rcount = Sheets(workyear & "年" & y & "月").Cells(Rows.Count, 4).End(xlUp).Row
+        ccountall = Sheets("All").Cells(4, Columns.Count).End(xlToLeft).Column
+            
+        For j = 3 To rcount Step 1
+        
+            i = Sheets(workyear & "年" & y & "月").Cells(j, 4).Value
+            
+            If i <> "" Then
+            
+                For k = 1 To ccountall Step 3
+        
+                    x = Sheets("All").Cells(3, k).Value
+        
+                    If x = i Then
+                        Exit For
+                    End If
+        
+                Next
+                
+                rcountall = Sheets("All").Cells(Rows.Count, k).End(xlUp).Row
+                
+                Sheets("All").Cells(rcountall + 1, k).Value = Sheets(workyear & "年" & y & "月").Cells(j, 1).Value
+                Sheets("All").Cells(rcountall + 1, k + 1).Value = Sheets(workyear & "年" & y & "月").Cells(j, 2).Value
+                Sheets("All").Cells(rcountall + 1, k + 2).Value = Sheets(workyear & "年" & y & "月").Cells(j, 3).Value
+            
+            End If
+        Next
+    Next
+    
+    
+End Sub
