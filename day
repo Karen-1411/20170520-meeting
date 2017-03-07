@@ -16,8 +16,7 @@ Sub day()
             If Sheets(workyear & "年" & y & "月").Cells(i, 4).Value <> "" And _
                 Sheets(workyear & "年" & y & "月").Cells(i, 1).Value = "" Then
 
-                j = 1
-
+                j = 0
                 Do
                     j = j + 1
                     
