@@ -1,33 +1,34 @@
+'將未填的日期以往前一個日期填上
 Sub day()
 
     Dim rcount As Integer
     Dim i, y, j As Integer
-    Dim year As Integer
+    Dim workyear As Integer
     
-    year = 104
+    workworkyear = 104
     
     For y = 1 To 12 Step 1
     
-        rcount = Sheets(year & "年" & y & "月").Cells(Rows.Count, 4).End(xlUp).Row
+        rcount = Sheets(workyear & "年" & y & "月").Cells(Rows.Count, 4).End(xlUp).Row
 
         For i = 3 To rcount Step 1
 
-            If Sheets(year & "年" & y & "月").Cells(i, 4).Value <> "" And _
-                Sheets(year & "年" & y & "月").Cells(i, 1).Value = "" Then
+            If Sheets(workyear & "年" & y & "月").Cells(i, 4).Value <> "" And _
+                Sheets(workyear & "年" & y & "月").Cells(i, 1).Value = "" Then
 
                 j = 1
 
                 Do
                     j = j + 1
                     
-                    If IsDate(Sheets(year & "年" & y & "月").Cells(i - j, 1).Value) = True Then
+                    If IsDate(Sheets(workyear & "年" & y & "月").Cells(i - j, 1).Value) = True Then
 
-                        Sheets(year & "年" & y & "月").Cells(i, 1).Value = _
-                            Sheets(year & "年" & y & "月").Cells(i - j, 1).Value
+                        Sheets(workyear & "年" & y & "月").Cells(i, 1).Value = _
+                            Sheets(workyear & "年" & y & "月").Cells(i - j, 1).Value
 
                     End If
                     
-                Loop While IsDate(Sheets(year & "年" & y & "月").Cells(i - j, 1).Value) = False
+                Loop While IsDate(Sheets(workyear & "年" & y & "月").Cells(i - j, 1).Value) = False
 
             End If
 
