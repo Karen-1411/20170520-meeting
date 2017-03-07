@@ -1,0 +1,40 @@
+Sub day()
+
+    Dim rcount As Integer
+    Dim i, y, j As Integer
+    Dim year As Integer
+    
+    year = 104
+    
+    For y = 1 To 12 Step 1
+    
+        rcount = Sheets(year & "年" & y & "月").Cells(Rows.Count, 4).End(xlUp).Row
+
+        For i = 3 To rcount Step 1
+
+            If Sheets(year & "年" & y & "月").Cells(i, 4).Value <> "" And _
+                Sheets(year & "年" & y & "月").Cells(i, 1).Value = "" Then
+
+                j = 1
+
+                Do
+                    j = j + 1
+                    
+                    If IsDate(Sheets(year & "年" & y & "月").Cells(i - j, 1).Value) = True Then
+
+                        Sheets(year & "年" & y & "月").Cells(i, 1).Value = _
+                            Sheets(year & "年" & y & "月").Cells(i - j, 1).Value
+
+                    End If
+                    
+                Loop While IsDate(Sheets(year & "年" & y & "月").Cells(i - j, 1).Value) = False
+
+            End If
+
+        Next
+
+    Next
+    
+
+End Sub
+
