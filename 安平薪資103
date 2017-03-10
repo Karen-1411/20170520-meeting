@@ -1,0 +1,366 @@
+Option Explicit
+
+Sub anpingsalary()
+
+    Dim namesheet, salarysheet As Worksheet
+    
+    Dim j, i, k As Integer
+    Dim rcountraw, salarymonth, rcountall, employeenumraw, endrowraw, itemnumall, itemnumraw, employeenumall As Integer
+'   rcountraw:薪資單工作表列數, salarymonth:薪資單月份, rcountall:ALL工作表列數(姓名欄), employeenumraw:薪資單員工姓名列數
+'   endrowraw:薪資單項目輸入最後一欄，以"實領合計"為標的, itemnumall:ALL工作表薪資項目欄數, itennumraw:薪資單薪資項目欄數,
+'   employeenumall：ALL工作表員工姓名列數
+    Dim employeestr, itemstr, a As String
+'   employeestr:員工姓名, itemstr:項目
+    
+    Set namesheet = Sheets("總表")
+    Set salarysheet = Sheets("行政VS鐘點")  '自行修改工作表名稱
+    
+    salarysheet.Activate
+    Cells.Replace What:="幸娟", Replacement:="李幸娟", LookAt:=xlWhole, _
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _
+        ReplaceFormat:=False
+    Cells.Replace What:="琇如", Replacement:="蔡琇如", LookAt:=xlWhole, _
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _
+        ReplaceFormat:=False
+    Cells.Replace What:="湘齡", Replacement:="鄭湘齡", LookAt:=xlWhole, _
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _
+        ReplaceFormat:=False
+    Cells.Replace What:=" 林佩儀", Replacement:="林佩儀", LookAt:=xlWhole, _
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _
+        ReplaceFormat:=False
+    Cells.Replace What:="雅真", Replacement:="林雅真", LookAt:=xlWhole, _
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _
+        ReplaceFormat:=False
+    Cells.Replace What:="姮妃", Replacement:="吳姮妃", LookAt:=xlWhole, _
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _
+        ReplaceFormat:=False
+    Cells.Replace What:="姻燕", Replacement:="李姻燕", LookAt:=xlWhole, _
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _
+        ReplaceFormat:=False
+    
+    rcountraw = 800 '自行輸入薪資單工作表列數
+    
+    '薪資單工作表逐列搜尋"G欄
+    For j = 3 To rcountraw Step 1
+
+        '以"金額"為每一個薪資單的標的
+        If salarysheet.Cells(j, 4).Value = "金額" And IsError(salarysheet.Cells(j - 1, 7).Value) = False Then
+
+            employeenumraw = j - 1 '記錄薪資單工作表員工姓名列數
+            employeestr = Trim(salarysheet.Cells(employeenumraw, 7).Value) '紀錄員工姓名
+            rcountall = Sheets("ALL").Cells(Rows.Count, 1).End(xlUp).Row
+
+            '在"ALL"工作表中找到員工姓名列數
+            For i = 4 To rcountall Step 1
+
+                If employeestr = Sheets("ALL").Cells(i, 1).Value Then
+                    employeenumall = i
+                    Exit For
+                ElseIf i = rcountall Then
+                    Sheets("ALL").Cells(i + 1, 1).Value = employeestr
+                    Sheets("ALL").Cells(i + 1, 43).Value = "本月到職。"
+                    employeenumall = i + 1
+                ElseIf employeestr = "" Then
+                    MsgBox "有人姓名空白耶！？"
+                    MsgBox salarysheet.Cells(employeenumraw, 7).Address
+                End If
+
+            Next
+            
+            '以薪資單"B"欄的"實領合計"為項目最尾端標的
+            i = j
+            Do
+            i = i + 1
+            Loop Until salarysheet.Cells(i, 2).Value = "實領合計"
+            endrowraw = i
+                        
+            For i = j + 1 To endrowraw Step 1
+
+                itemstr = salarysheet.Cells(i, 2).Value
+
+                If Trim(itemstr) <> "" And Trim(itemstr) <> "0" Then
+
+                    Select Case True
+                    Case itemstr Like "本薪"
+                        k = 3
+                    Case itemstr Like "月薪"
+                        k = 3
+                    Case itemstr Like "敬業獎金"
+                        k = 4
+                    Case itemstr Like "全勤*"
+                        k = 5
+                    Case itemstr Like "競業限制補償"
+                        k = 6
+                    Case itemstr Like "交通補助金"
+                        k = 7
+                    Case itemstr Like "預支三節獎金"
+                        k = 8
+                    Case itemstr Like "安全獎金"
+                        k = 9
+                    Case itemstr Like "專業*"
+                        k = 10
+                    Case itemstr Like "帶班*"
+                        k = 11
+                    Case itemstr Like "*介紹*"
+                        k = 12
+                    Case itemstr Like "*車*"
+                        k = 13
+                    Case itemstr Like "值班*"
+                        k = 14
+                    Case itemstr Like "*職務*"
+                        k = 15
+                    Case itemstr Like "組長*"
+                        k = 15
+                    Case itemstr Like "*新生*"
+                        k = 16
+                    Case itemstr Like "團*" '團體獎金
+                        k = 17
+                    Case itemstr Like "個*" '個人獎金
+                        k = 18
+                    Case itemstr Like "退休提撥金"
+                        k = 19
+                    Case itemstr Like "*休假*"
+                        k = 20
+                    Case itemstr Like "假單抵現"
+                        k = 20
+                    Case itemstr Like "*年假*"
+                        k = 20
+                    Case itemstr Like "超時津貼"
+                        k = 21
+                    Case itemstr Like "*加班*" '併入超時津貼
+                        k = 21
+                    Case itemstr Like "人數*"
+                        k = 22
+                    Case itemstr Like "*鐘點費"
+                        k = 23
+                    Case itemstr Like "幼兒部" '鐘點費：For吳思頤老師
+                        k = 23
+                    Case itemstr Like "拆帳" '併入鐘點費：For珠心算老師
+                        k = 23
+                    Case itemstr Like "教材費" '併入其他：For珠心算老師
+                        k = 25
+                        Sheets("ALL").Cells(employeenumall, 43).Value = _
+                            Sheets("ALL").Cells(employeenumall, 43).Value & _
+                            "其他:教材費" & salarysheet.Cells(i, 4).Value & "。"
+                    Case itemstr Like "*績效獎金" '經營績效獎金
+                        k = 24
+                    Case itemstr Like "其*"
+                        k = 25
+                    Case itemstr Like "工作*" '併入其他：For王叔叔
+                        k = 25
+                        Sheets("ALL").Cells(employeenumall, 43).Value = _
+                            Sheets("ALL").Cells(employeenumall, 43).Value & _
+                            "其他:" & itemstr & salarysheet.Cells(i, 4).Value & "。"
+                    Case itemstr Like "獎金" '併入其他：For杜阿姨
+                        k = 25
+                        Sheets("ALL").Cells(employeenumall, 43).Value = _
+                            Sheets("ALL").Cells(employeenumall, 43).Value & _
+                            "其他:" & itemstr & salarysheet.Cells(i, 4).Value & "。"
+                    Case itemstr Like "行政津貼" '併入其他：For壬秀
+                        k = 25
+                        Sheets("ALL").Cells(employeenumall, 43).Value = _
+                            Sheets("ALL").Cells(employeenumall, 43).Value & _
+                            "其他:" & itemstr & salarysheet.Cells(i, 4).Value & "。"
+                    Case itemstr Like "補2月*" '併入其他
+                        k = 25
+                        Sheets("ALL").Cells(employeenumall, 43).Value = _
+                            Sheets("ALL").Cells(employeenumall, 43).Value & _
+                            "其他:" & itemstr & salarysheet.Cells(i, 4).Value & "。"
+                    Case itemstr Like "才藝津貼" '併入其他
+                        k = 25
+                        Sheets("ALL").Cells(employeenumall, 43).Value = _
+                            Sheets("ALL").Cells(employeenumall, 43).Value & _
+                            "其他:" & itemstr & salarysheet.Cells(i, 4).Value & "。"
+                    Case itemstr Like "補上月獎金" '併入其他
+                        k = 25
+                        Sheets("ALL").Cells(employeenumall, 43).Value = _
+                            Sheets("ALL").Cells(employeenumall, 43).Value & _
+                            "其他:" & itemstr & salarysheet.Cells(i, 4).Value & "。"
+                    Case itemstr Like "生日*" '併入其他
+                        k = 25
+                        MsgBox salarysheet.Cells(employeenumraw, 6).Value & "生日快樂！"
+                    Case itemstr Like "小計"
+                        k = 26
+                    Case itemstr Like "實領合計"
+                        k = 41
+                    Case itemstr Like "單一*"
+                        MsgBox "有(單一)這個項目喔！"
+                        GoTo nextitem
+                '忽略的項目
+                    Case itemstr Like "年資"
+                        GoTo nextitem
+                    Case Else
+                        MsgBox "沒有" & itemstr & "這個項目！"
+                        MsgBox salarysheet.Cells(i, 1).Address
+                        GoTo nextitem
+                    End Select
+
+                    itemnumall = k
+                    itemnumraw = i
+
+                    On Error Resume Next
+
+                    Sheets("ALL").Cells(employeenumall, itemnumall).Value = _
+                        Sheets("ALL").Cells(employeenumall, itemnumall).Value + salarysheet.Cells(itemnumraw, 4).Value
+
+                    On Error GoTo 0
+                    
+                    itemnumall = 0: itemnumraw = 0: k = 0
+                    
+nextitem:
+                    itemnumall = 0: itemnumraw = 0: k = 0
+
+                End If
+
+            Next
+
+            itemnumall = 0: itemnumraw = 0: itemstr = "": k = 0
+
+            For i = j + 1 To endrowraw Step 1
+
+                itemstr = salarysheet.Cells(i, 5).Value
+
+                If Trim(itemstr) <> "" And Trim(itemstr) <> "0" Then
+
+                    Select Case True
+                    Case itemstr Like "健保*"
+                        k = 27
+                    Case itemstr Like "勞保*"
+                        k = 28
+                    Case itemstr Like "退休提撥金"
+                        k = 29
+                    Case itemstr Like "遲到*"
+                        k = 30
+                    Case itemstr Like "流失減薪"
+                        k = 31
+                    Case itemstr Like "請假*"
+                        k = 32
+                    Case itemstr Like "*病假*"
+                        k = 33
+                    Case itemstr Like "*事假*"
+                        k = 34
+                    Case itemstr Like "休假減薪"
+                        k = 35
+                    Case itemstr Like "*借支還款*"
+                        k = 36
+                    Case itemstr Like "薪資抵債*" '併入借支還款
+                        k = 36
+                    Case itemstr Like "薪資抵學費*"
+                        k = 37
+                    Case itemstr Like "預支*"
+                        k = 38
+                    Case itemstr Like "其*"
+                        k = 39
+                    Case itemstr Like "未足月扣除"
+                        MsgBox "有(未足月扣除)這個項目喔！"
+                        GoTo nextitemminus
+                    Case itemstr Like "小計"
+                        k = 40
+                '忽略
+                    Case Else
+                        MsgBox "沒有" & itemstr & "這個項目！"
+                        MsgBox salarysheet.Cells(i, 1).Address
+                        GoTo nextitemminus
+                    End Select
+
+                    itemnumall = k
+                    itemnumraw = i
+    
+                    On Error Resume Next
+    
+                    Sheets("ALL").Cells(employeenumall, itemnumall).Value = _
+                        Sheets("ALL").Cells(employeenumall, itemnumall).Value + salarysheet.Cells(itemnumraw, 7).Value
+    
+                    On Error GoTo 0
+                    
+                    itemnumall = 0: itemnumraw = 0: k = 0
+nextitemminus:
+                    itemnumall = 0: itemnumraw = 0: k = 0
+                
+                End If
+
+            Next
+
+        End If
+
+        employeenumraw = 0: employeenumall = 0: endrowraw = 0: itemnumall = 0: itemnumraw = 0
+        employeestr = "": itemstr = ""
+        
+nextemployee:
+        employeenumraw = 0: employeenumall = 0: endrowraw = 0: itemnumall = 0: itemnumraw = 0
+        employeestr = "": itemstr = ""
+
+    Next
+    
+    Sheets("All").Activate
+
+End Sub
+
+Sub confirm()
+
+    Dim i, j, rcount As Integer
+    Dim targetsheet As Worksheet
+
+    Set targetsheet = Sheets("ALL")
+    j = 41
+
+    rcount = targetsheet.Cells(Rows.Count, 1).End(xlUp).Row
+    
+    For i = 4 To rcount Step 1
+    
+        If IsError(targetsheet.Cells(i, j + 1).Value) = True Then
+            targetsheet.Cells(i, j + 1).Value = ""
+        End If
+        
+        If targetsheet.Cells(i, j).Value <> "" And targetsheet.Cells(i, j).Value <> "0" Then
+            If targetsheet.Cells(i, j).Value <> targetsheet.Cells(i, j + 1).Value Then
+                targetsheet.Cells(i, j + 1).Interior.Color = RGB(255, 0, 0)
+            ElseIf targetsheet.Cells(i, j + 1).Value = "" Then
+                targetsheet.Cells(i, j + 1).Interior.Color = RGB(255, 0, 0)
+            End If
+        ElseIf targetsheet.Cells(i, j).Value = "" And targetsheet.Cells(i, j + 1).Value <> "" And targetsheet.Cells(i, j + 1).Value <> "0" Then
+            targetsheet.Cells(i, j + 1).Interior.Color = RGB(255, 0, 0)
+        End If
+
+    Next
+
+End Sub
+
+Sub pastesalary()
+
+    Selection.Copy
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False
+    Application.CutCopyMode = False
+    Selection.Copy
+
+End Sub
+
+Sub deleteNA()
+
+    Dim i, j, rcount As Integer
+    Dim targetsheet As Worksheet
+
+    Set targetsheet = Sheets("ALL")
+    j = 2
+
+    rcount = targetsheet.Cells(Rows.Count, 1).End(xlUp).Row
+    
+    For i = 4 To rcount Step 1
+    
+        If IsError(targetsheet.Cells(i, j).Value) = True Then
+            targetsheet.Cells(i, j).Value = ""
+        End If
+    
+    Next
+
+End Sub
+
+Sub insertxldown()
+
+    Selection.Insert Shift:=xlDown
+    ActiveWindow.SmallScroll Down:=3
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False
+        
+End Sub
