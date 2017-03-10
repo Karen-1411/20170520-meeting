@@ -1,0 +1,26 @@
+Option Explicit
+
+Sub inputallname()
+
+    Dim inputsheet As Worksheet
+    Dim i, k, year As Integer
+    Dim rcount As Integer
+
+    year = 2016
+    
+    Set inputsheet = Sheets("安平薪資格式")
+    
+    rcount = inputsheet.Cells(Rows.Count, 1).End(xlUp).Row
+    
+    i = 3
+    
+    k = 12
+
+    Do
+        rcount = inputsheet.Cells(Rows.Count, 1).End(xlUp).Row
+        inputsheet.Cells(rcount + 1, 1).Value = _
+            ExecuteExcel4Macro("'D:\Karen\20170520會議資料\安平\[財務報表(安平校)" & year & "年" & k & "月.xlsm]員工名冊'!R" & i & "C2")
+        i = i + 1
+    Loop Until inputsheet.Cells(rcount + 1, 1).Value = "0"
+        
+End Sub
