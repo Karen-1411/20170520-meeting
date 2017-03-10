@@ -1,0 +1,55 @@
+Sub keywordmove()
+
+    Dim keyword As String
+    Dim r, c, ccountall, decision, i, rcountall As Integer
+    
+    ccountall = Sheets("All").Cells(4, Columns.Count).End(xlToLeft).Column
+    
+    keyword = Application.InputBox(prompt:="關鍵字是？", Title:="移動項目")
+    decision = Application.InputBox(prompt:="想換到哪一欄？", Title:="移動項目", Type:=1)
+
+    If IsNumeric(decision) = False Then
+
+        MsgBox "輸入錯誤！"
+        Exit Sub
+
+    ElseIf decision > 29 Or decision <= 0 Then
+
+        MsgBox "輸入錯誤！"
+       Exit Sub
+
+    Else
+
+        For i = 1 To ccountall Step 3
+
+            If decision = Sheets("All").Cells(3, i).Value Then
+                Exit For
+            End If
+
+        Next
+        
+    End If
+    
+    
+    For c = 2 To ccountall - 1 Step 3
+    
+        rcountall = Sheets("All").Cells(Rows.Count, c).End(xlUp).Row
+    
+        For r = 5 To rcountall Step 1
+        
+            If Sheets("All").Cells(r, c).Value Like "*" & keyword & "*" Then
+            
+                rcountall = Sheets("All").Cells(Rows.Count, i).End(xlUp).Row
+                
+                Range(Cells(r, c - 1), Cells(r, c + 1)).Cut
+                Cells(rcountall + 1, i).Select
+                Selection.Insert Shift:=xlDown
+                Range(Cells(r, c - 1), Cells(r, c + 1)).Delete Shift:=xlUp
+            
+            End If
+        
+        Next
+    
+    Next
+
+End Sub
