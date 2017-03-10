@@ -1,0 +1,48 @@
+Sub movecorrect()
+
+'請選取要移動的項目(包括日期、項目、金額)
+
+    Dim x, i, ccountall, rcountall, a, b As Integer
+
+    x = Application.InputBox(prompt:="想換到哪一欄？", Title:="移動項目", Type:=1)
+
+    ccountall = Sheets("All").Cells(4, Columns.Count).End(xlToLeft).Column
+
+    If IsNumeric(x) = False Then
+
+        MsgBox "輸入錯誤！"
+        Exit Sub
+
+    ElseIf x > 29 Or x <= 0 Then
+
+        MsgBox "輸入錯誤！"
+       Exit Sub
+
+    Else
+
+        For i = 1 To ccountall Step 3
+
+            If x = Sheets("All").Cells(3, i).Value Then
+                Exit For
+            End If
+
+        Next
+
+    End If
+
+    rcountall = Sheets("All").Cells(Rows.Count, i).End(xlUp).Row
+
+    a = Selection.Row
+    
+    b = Selection.Column
+    
+    Selection.Cut
+
+    Cells(rcountall + 1, i).Select
+
+    Selection.Insert Shift:=xlDown
+
+    Range(Cells(a, b), Cells(a, b + 2)).Delete Shift:=xlUp
+
+
+End Sub
