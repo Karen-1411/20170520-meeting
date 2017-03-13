@@ -1,0 +1,149 @@
+Option Explicit
+
+Sub 刪除不必要的列()
+    
+    Dim i, rcount As Integer
+    Dim targetsheet As Worksheet
+    
+    Set targetsheet = Sheets("103.1收入")
+    
+    rcount = targetsheet.Cells(Rows.Count, 5).End(xlUp).Row
+    
+    For i = 1 To rcount Step 1
+        
+        If targetsheet.Cells(i, 5).Value Like "*學費收入" Then
+
+            Rows(i & ":" & i).Select
+            Selection.Delete Shift:=xlUp
+        
+        End If
+    
+    Next
+    
+End Sub
+
+Sub inputdate()
+
+    Dim i, rcount As Integer
+    Dim targetsheet As Worksheet
+    Dim s As String
+    
+    Set targetsheet = Sheets("103.1收入")
+    
+    rcount = targetsheet.Cells(Rows.Count, 5).End(xlUp).Row
+    
+    For i = 1 To rcount Step 1
+        
+        If targetsheet.Cells(i, 5).Value Like "*學費收入" Then
+            s = targetsheet.Cells(i, 5).Value
+        Else
+            targetsheet.Cells(i, 1).Value = s
+        End If
+    
+    Next
+
+End Sub
+
+Sub 欄特定字取代()
+
+    Columns("A:A").Select
+    Selection.Replace What:="學費收入", Replacement:="", LookAt:=xlPart, _
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _
+        ReplaceFormat:=False
+        
+End Sub
+
+Sub income()
+
+    Dim inputsheet, targetsheet As Worksheet
+    Dim j, rcountall, i, rcount As Integer
+    
+    Set inputsheet = Sheets("ALL")
+    
+    For j = 2 To Worksheets.Count - 1 Step 1
+    
+        Set targetsheet = Sheets(j)
+        rcountall = inputsheet.Cells(Rows.Count, 5).End(xlUp).Row
+        
+        i = 3
+        Do
+        
+            If targetsheet.Cells(i, 5).Value <> "" And targetsheet.Cells(i + 1, 5).Value = "" Then
+                rcount = i
+                Exit Do
+            ElseIf targetsheet.Cells(i, 5).Value = "" Then
+                GoTo nextsheet
+            Else
+                i = i + 1
+            End If
+        
+        Loop Until targetsheet.Cells(i, 5).Value = "合計"
+        
+        inputsheet.Cells(rcountall + 1, 1).Value = targetsheet.Cells(1, 1).Value
+        
+        rcountall = inputsheet.Cells(Rows.Count, 5).End(xlUp).Row
+        
+        Application.CutCopyMode = False
+        
+        targetsheet.Select
+        
+        Range(Cells(3, 1), Cells(rcount, 6)).Copy
+        
+        inputsheet.Select
+        
+        inputsheet.Cells(rcountall + 1, 2).Select
+        
+        Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False
+        
+        Application.CutCopyMode = False
+        
+nextsheet:
+        i = 0
+    
+    Next
+    
+
+End Sub
+
+'將未填的日期以往前一個日期填上
+Sub day()
+
+    Dim targetsheet As Worksheet
+    Dim rcount As Integer
+    Dim i, y, j As Integer
+    
+    Set targetsheet = Sheets("ALL")
+    
+    rcount = targetsheet.Cells(Rows.Count, 5).End(xlUp).Row
+
+    For i = 2 To rcount Step 1
+
+        If targetsheet.Cells(i, 1).Value = "" Then
+        
+            targetsheet.Cells(i, 1).Value = targetsheet.Cells(i - 1, 1).Value
+
+        End If
+
+    Next
+
+End Sub
+
+Sub 日期格式化()
+
+    Dim year, month As Integer
+    year = 2014
+    month = 6
+
+    Cells.Replace What:=year - 1, Replacement:=year, LookAt:=xlPart, _
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _
+        ReplaceFormat:=False
+    Cells.Replace What:=month & "月", Replacement:=year & "年" & month & "月", LookAt:=xlPart, _
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _
+        ReplaceFormat:=False
+    Columns("A:A").EntireColumn.AutoFit
+    Columns("A:A").Select
+    Selection.NumberFormatLocal = "yyyy/m/d"
+
+End Sub
+
