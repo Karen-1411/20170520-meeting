@@ -1,0 +1,111 @@
+Option Explicit
+
+Sub substitute()
+
+    Dim i, j, tyear, ccount, rcount As Integer
+    Dim tsheet As Worksheet
+    Dim s As String
+    
+    tyear = 2015
+    
+    Set tsheet = Sheets("104年")
+    
+    ccount = tsheet.Cells(4, Columns.Count).End(xlToLeft).Column
+    
+    For i = 1 To ccount Step 3
+    
+        rcount = tsheet.Cells(Rows.Count, i).End(xlUp).Row
+        
+        For j = 5 To rcount Step 1
+        
+            s = tsheet.Cells(j, i).Value
+        
+            If s Like "*年*月*日" Then
+                
+'                tsheet.Cells(j, i).Value = Replace(s, "0105", tyear)
+                tsheet.Cells(j, i).Value = Format(DateValue(tsheet.Cells(j, i).Value), "yyyy/mm/dd")
+'                tsheet.Cells(j, i).Value = tyear & "年" & s
+'                tsheet.Cells(j, i).Value = Replace(s, "0104", "104")
+            
+            End If
+        
+        Next
+        
+    
+    Next
+
+End Sub
+
+Sub expense()
+
+    Dim i, j, k, ccount, rcount As Integer
+    Dim a As Double
+    Dim tsheet As Worksheet
+    Dim s As String
+    Dim d, ed As Date
+    
+    Set tsheet = Sheets("105年")
+    d = #1/1/2016#
+    ccount = tsheet.Cells(4, Columns.Count).End(xlToLeft).Column
+    
+    k = 1
+    Do
+        ed = DateSerial(Year(d), Month(d) + 1, 0)
+        
+        For i = 1 To ccount Step 3
+        
+            rcount = tsheet.Cells(Rows.Count, i).End(xlUp).Row
+            
+            For j = 5 To rcount Step 1
+            
+                If tsheet.Cells(j, i).Value >= d And tsheet.Cells(j, i).Value <= ed Then
+                
+                    a = a + tsheet.Cells(j, i + 2).Value
+                
+                End If
+                
+            Next
+            
+        
+        Next
+        
+        Sheets("analysis").Cells(k + 1, 4).Value = a
+        
+        d = DateSerial(Year(d), Month(d) + 1, 1)
+        
+        k = k + 1
+        
+        a = 0
+        
+    Loop Until k > 12
+    
+
+End Sub
+
+Sub confirmdate()
+
+    Dim i, j, ccount, rcount As Integer
+    Dim tsheet As Worksheet
+    
+    Set tsheet = Sheets("105年")
+    
+    ccount = tsheet.Cells(4, Columns.Count).End(xlToLeft).Column
+    
+    For i = 1 To ccount Step 3
+    
+        rcount = tsheet.Cells(Rows.Count, i).End(xlUp).Row
+        
+        For j = 5 To rcount Step 1
+        
+            If IsDate(tsheet.Cells(j, i).Value) = False Then
+            
+                MsgBox tsheet.Cells(j, i).Address
+            
+            End If
+        
+        Next
+        
+    
+    Next
+
+End Sub
