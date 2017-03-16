@@ -5,16 +5,17 @@ Sub 刪除不必要的列()
     Dim i, rcount As Integer
     Dim targetsheet As Worksheet
     
-    Set targetsheet = Sheets("103.1收入")
+    Set targetsheet = Sheets("104.8")
     
     rcount = targetsheet.Cells(Rows.Count, 5).End(xlUp).Row
     
     For i = 1 To rcount Step 1
         
-        If targetsheet.Cells(i, 5).Value Like "*學費收入" Then
+        If targetsheet.Cells(i, 4).Value Like "合計" Then
 
             Rows(i & ":" & i).Select
             Selection.Delete Shift:=xlUp
+            i = i - 1
         
         End If
     
@@ -146,4 +147,197 @@ Sub 日期格式化()
     Selection.NumberFormatLocal = "yyyy/m/d"
 
 End Sub
+
+Sub incomeanping()
+
+    Dim i, year, ccount, rcount, rcountall As Integer
+    Dim targetsheet, inputsheet As Worksheet
+    
+    year = 104
+    
+    Set inputsheet = Sheets(year & "年")
+    
+    For i = 1 To 8 Step 1
+    
+        Set targetsheet = Sheets(year & "." & i)
+    
+        ccount = targetsheet.Cells(1, Columns.Count).End(xlToLeft).Column
+        rcount = targetsheet.Cells(Rows.Count, 1).End(xlUp).Row
+        rcountall = inputsheet.Cells(Rows.Count, 1).End(xlUp).Row
+        
+        Application.CutCopyMode = False
+        
+        targetsheet.Select
+        
+        Range(Cells(2, 1), Cells(rcount, ccount)).Copy
+        
+        inputsheet.Select
+        
+        inputsheet.Cells(rcountall + 1, 1).Select
+        
+        Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+                :=False, Transpose:=False
+            
+        Application.CutCopyMode = False
+    
+    Next
+
+End Sub
+
+Option Explicit
+
+Sub incomeformat()
+
+    Dim raw, final As Worksheet
+    Dim rcount, ccount, rcountall, j, i, k As Integer
+    Dim a As Double
+    Dim s As String
+    Dim year As Integer
+
+    year = 104
+
+    Set final = Sheets(year & "年")
+
+    Set raw = Sheets("104.9-104.12raw")
+
+    ccount = raw.Cells(1, Columns.Count).End(xlToLeft).Column
+    rcount = raw.Cells(Rows.Count, 1).End(xlUp).Row
+
+    For i = 1 To ccount Step 1
+
+        s = Trim(raw.Cells(1, i).Value)
+
+        If s <> "" Then
+            Select Case True
+            Case s Like "日期"
+                k = 1
+            Case s Like "剩餘應付"
+                k = 26
+            Case s Like "應付已付"
+                k = 27
+            Case s Like "新增費用"
+                k = 28
+            Case s Like "帳戶支出"
+                k = 29
+            Case s Like "零用金支出"
+                k = 30
+'            Case s Like "班別"
+'                k = 31
+'            Case s Like "姓名"
+'                k = 32
+'            Case s Like "摘要"
+'                k = 33
+'            Case s Like "金額"
+'                k = 14
+'            Case s Like "上期應收"
+'                k = 2
+'            Case s Like "本期應收"
+'                k = 3
+'            Case s Like "下期應收"
+'                k = 4
+            Case s Like "剩餘應收"
+                k = 5
+'            Case s Like "已收學費"
+'                k = 6
+'            Case s Like "未收學費"
+'                k = 10
+'            Case s Like "本期未收"
+'                k = 8
+'            Case s Like "下期未收"
+'                k = 9
+'            Case s Like "帳戶金額"
+'                If raw.Cells(2, i).Value Like "*玉山*" Then
+'                    k = 11
+'                ElseIf raw.Cells(2, i).Value Like "*萬泰*" Then
+'                    k = 12
+'                End If
+            Case s Like "學費收入"
+                k = 14
+            Case s Like "支票收入"
+                k = 15
+'            Case s Like "現金支出"
+'                k = 18
+            Case s Like "其*收入"
+                k = 16
+            Case s Like "存入銀行"
+                k = 17
+'            Case s Like "支票支出"
+'                k = 19
+'            Case s Like "其*支出"
+'                k = 20
+            Case s Like "帳戶餘額"
+                k = 23
+'               If raw.Cells(2, i).Value Like "*玉山*" Then
+'                    k = 21
+'                ElseIf raw.Cells(2, i).Value Like "*萬泰*" Then
+'                    k = 22
+'                End If
+'            Case s Like "代收票據"
+'                k = 24
+'            Case s Like "備*"
+'                k = 25
+            Case Else
+                MsgBox "沒有" & s & "這個項目！"
+                k = 0
+            End Select
+
+            Application.CutCopyMode = False
+
+            raw.Select
+
+            Range(Cells(2, i), Cells(rcount, i)).Copy
+            
+            rcountall = final.Cells(Rows.Count, 1).End(xlUp).Row
+
+            final.Select
+
+            final.Cells(rcountall, k).Select
+
+            Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+                :=False, Transpose:=False
+
+            Application.CutCopyMode = False
+        Else
+            GoTo nextitem
+        End If
+nextitem:
+        k = 0
+
+    Next
+
+    k = 0
+
+    rcountall = final.Cells(Rows.Count, 1).End(xlUp).Row
+
+'    For i = 3 To rcountall Step 1
+'
+'        a = final.Cells(i, 2).Value + final.Cells(i, 3).Value + final.Cells(i, 4).Value
+'
+'        If IsError(a) = False Then
+'
+'            final.Cells(i, 5).Value = a
+'
+'        End If
+'
+'        a = final.Cells(i, 11).Value + final.Cells(i, 12).Value
+'
+'        If IsError(a) = False Then
+'
+'            final.Cells(i, 13).Value = a
+'
+'        End If
+'
+'        a = final.Cells(i, 21).Value + final.Cells(i, 22).Value
+'
+'        If IsError(a) = False Then
+'
+'            final.Cells(i, 23).Value = a
+'
+'        End If
+'
+'    Next
+
+End Sub
+
+
 
