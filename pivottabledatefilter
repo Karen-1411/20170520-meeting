@@ -1,0 +1,31 @@
+Option Explicit
+
+Sub datefilter()
+
+    Dim i, rcount As Integer
+    Dim d, ed As Date
+    
+    d = #1/1/2014#
+    
+    i = 1
+    Do
+
+        ed = DateSerial(Year(d), Month(d) + 1, 0)
+        ActiveSheet.PivotTables("樞紐分析表1").PivotFields("日期").ClearAllFilters
+        ActiveSheet.PivotTables("樞紐分析表1").PivotFields("日期").PivotFilters.Add Type:= _
+            xlDateBetween, Value1:="" & d & "", Value2:="" & ed & ""
+            
+        rcount = Sheets("analysis").Cells(Rows.Count, 1).End(xlUp).Row
+        
+        Sheets("analysis").Cells(i, 7).Value = Sheets("analysis").Cells(rcount, 2).Value + _
+            Sheets("analysis").Cells(rcount, 3).Value + Sheets("analysis").Cells(rcount, 4).Value
+
+        d = DateSerial(Year(d), Month(d) + 1, 1)
+        
+        i = i + 1
+        
+    Loop Until i > 12
+    
+End Sub
+
+
