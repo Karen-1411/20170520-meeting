@@ -1,0 +1,152 @@
+Option Explicit
+
+Sub income()
+
+    Dim income, all As Worksheet
+    Dim rcountall, rcount, ccount, j, i, k As Integer
+    Dim s As String
+    
+    Set all = Sheets("ALL")
+    
+    For j = 1 To 12 Step 1
+    
+        Set income = Sheets(j & "月份")
+        ccount = income.Cells(2, Columns.Count).End(xlToLeft).Column
+        rcountall = all.Cells(Rows.Count, 1).End(xlUp).Row
+    
+        For i = 1 To ccount Step 1
+        
+            s = Trim(income.Cells(2, i).Value)
+            
+            If s <> "" Then
+                Select Case True
+                Case s Like "日*"
+                    k = 1
+                Case s Like "應收學費"
+                    k = 2
+                Case s Like "已收學費"
+                    k = 3
+                Case s Like "未收學費"
+                    k = 4
+                Case s Like "上期未收*"
+                    k = 5
+                Case s Like "帳戶金額"
+                    k = 6
+                Case s Like "現金收入"
+                    k = 7
+                Case s Like "學費收入"
+                    k = 7
+                Case s Like "支票收入"
+                    k = 8
+                Case s Like "現金支出"
+                    k = 9
+                Case s Like "其*收入"
+                    k = 10
+                Case s Like "支票支出"
+                    k = 11
+                Case s Like "帳戶餘額"
+                    k = 12
+                Case s Like "備*註"
+                    k = 13
+                Case Else
+                    MsgBox "沒有" & s & "這個項目！"
+                    k = 0
+                End Select
+                
+                rcount = income.Cells(Rows.Count, 1).End(xlUp).Row
+                
+                Application.CutCopyMode = False
+                
+                income.Select
+                
+                Range(Cells(3, i), Cells(rcount, i)).Copy
+                
+                all.Select
+                
+                all.Cells(rcountall + 1, k).Select
+                
+                Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+                    :=False, Transpose:=False
+                
+                Application.CutCopyMode = False
+            Else
+                GoTo nextitem
+            End If
+nextitem:
+            k = 0
+        
+        Next
+
+        k = 0
+    
+    Next
+
+
+End Sub
+
+Sub 刪除不必要的列()
+    
+    Dim i, rcount, j As Integer
+    Dim targetsheet As Worksheet
+    
+    Set targetsheet = Sheets("105年")
+    
+    rcount = targetsheet.Cells(Rows.Count, 1).End(xlUp).Row
+    
+    For i = 2 To rcount Step 1
+        
+        If targetsheet.Cells(i, 2).Value Like "*假*" Then
+
+            Rows(i & ":" & i).Select
+            Selection.Delete Shift:=xlUp
+            i = i - 1
+            rcount = targetsheet.Cells(Rows.Count, 1).End(xlUp).Row
+        
+        End If
+    
+    Next
+
+    
+End Sub
+
+Sub 擷取文字()
+    
+    Dim i, rcount, j As Integer
+    Dim targetsheet As Worksheet
+    Dim s, a, k As String
+    
+    Set targetsheet = Sheets("105年")
+    
+    rcount = targetsheet.Cells(Rows.Count, 1).End(xlUp).Row
+    
+    For i = 2 To rcount Step 1
+
+        If targetsheet.Cells(i, 2).Value Like "*應收*" Then
+
+            targetsheet.Cells(i, 2).Interior.Color = RGB(230, 184, 183)
+            s = Replace(targetsheet.Cells(i, 2).Value, Chr(10), "")
+            targetsheet.Cells(i, 13).Value = s & "。" & targetsheet.Cells(i, 13).Value
+
+            j = 0
+            k = 1
+            Do
+
+                a = Mid(s, k, 1)
+                If a = "費" Then
+                    j = k
+                End If
+                k = k + 1
+
+            Loop Until j <> 0
+
+            targetsheet.Cells(i, 2).Value = Mid(s, j + 1)
+
+        End If
+
+    Next
+    
+End Sub
+
+
+
+
