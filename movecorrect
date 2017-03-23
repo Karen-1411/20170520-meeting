@@ -1,5 +1,3 @@
-Option Explicit
-
 Sub movecorrect()
 
 '請選取要移動的項目(包括日期、項目、金額)
