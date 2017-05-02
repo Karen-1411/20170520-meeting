@@ -16,18 +16,22 @@ Sub teachersheet()
     rcountdata = teacherdata.Cells(Rows.Count, 1).End(xlUp).Row
     
     For i = 2 To rcount Step 1
-    
+        
+        '老師名單
         teachernamestr = teachername.Cells(i, 1).Value
         
+        '新增工作表，以老師名字命名
         With ThisWorkbook
             Set teacher = .Sheets.Add(After:=.Sheets(.Sheets.Count))
             teacher.Name = teachernamestr
         End With
         
         For j = 2 To rcountdata Step 1
-        
-            If teachername.Cells(i, 1).Value = teacherdata.Cells(j, 4).Value Then
             
+            '姓名
+            If teachername.Cells(i, 1).Value = teacherdata.Cells(j, 4).Value Then
+                
+                '只需輸入一次
                 If teacher.Cells(1, 1).Value = "" Then
                 
                     '校年名
@@ -69,6 +73,7 @@ Sub teachersheet()
                 
                 End If
                 
+                '新舊制薪資資料
                 rcount = teacher.Cells(Rows.Count, 1).End(xlUp).Row
                 
                 teacher.Cells(rcount + 1, 1).Value = teacherdata.Cells(j, 3).Value
