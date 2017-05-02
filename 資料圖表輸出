@@ -1,0 +1,131 @@
+Option Explicit
+
+Sub teachersheet()
+
+    Dim teacher, teachername, teacherdata As Worksheet
+    Dim i, j, rcount, rcountdata, rcountteacher As Integer
+    Dim teachernamestr As String
+    Dim targetc As Chart
+    
+    Application.ScreenUpdating = False
+    
+    Set teachername = Worksheets(1)
+    Set teacherdata = Worksheets(2)
+    
+    rcount = teachername.Cells(Rows.Count, 1).End(xlUp).Row
+    rcountdata = teacherdata.Cells(Rows.Count, 1).End(xlUp).Row
+    
+    For i = 2 To rcount Step 1
+    
+        teachernamestr = teachername.Cells(i, 1).Value
+        
+        With ThisWorkbook
+            Set teacher = .Sheets.Add(After:=.Sheets(.Sheets.Count))
+            teacher.Name = teachernamestr
+        End With
+        
+        For j = 2 To rcountdata Step 1
+        
+            If teachername.Cells(i, 1).Value = teacherdata.Cells(j, 4).Value Then
+            
+                If teacher.Cells(1, 1).Value = "" Then
+                
+                    '校年名
+                    teacher.Cells(1, 1).Value = teacherdata.Cells(j, 1).Value
+                    teacher.Cells(1, 2).Value = teacherdata.Cells(j, 2).Value
+                    teacher.Cells(1, 3).Value = teacherdata.Cells(j, 4).Value
+                    
+                    '年資
+                    teacher.Cells(1, 13).Value = teacherdata.Cells(1, 15).Value
+                    teacher.Cells(2, 13).Value = teacherdata.Cells(j, 15).Value
+                    
+                    '證照
+                    teacherdata.Select
+                    teacherdata.Range(Cells(1, 16), Cells(1, 21)).Copy
+                    teacher.Select
+                    teacher.Cells(1, 14).Select
+                    Selection.PasteSpecial Paste:=xlPasteAll, Operation:=xlNone, SkipBlanks:= _
+                        False, Transpose:=False
+                    Application.CutCopyMode = False
+                    
+                    teacherdata.Select
+                    teacherdata.Range(Cells(j, 16), Cells(j, 21)).Copy
+                    teacher.Select
+                    teacher.Cells(2, 14).Select
+                    Selection.PasteSpecial Paste:=xlPasteAll, Operation:=xlNone, SkipBlanks:= _
+                        False, Transpose:=False
+                    Application.CutCopyMode = False
+                    
+                    '項目
+                    teacher.Cells(21, 1).Value = teacherdata.Cells(1, 3).Value
+                    
+                    teacherdata.Select
+                    teacherdata.Range(Cells(1, 22), Cells(1, 71)).Copy
+                    teacher.Select
+                    teacher.Cells(21, 2).Select
+                    Selection.PasteSpecial Paste:=xlPasteAll, Operation:=xlNone, SkipBlanks:= _
+                        False, Transpose:=False
+                    Application.CutCopyMode = False
+                
+                End If
+                
+                rcount = teacher.Cells(Rows.Count, 1).End(xlUp).Row
+                
+                teacher.Cells(rcount + 1, 1).Value = teacherdata.Cells(j, 3).Value
+                
+                teacherdata.Select
+                teacherdata.Range(Cells(j, 22), Cells(j, 71)).Copy
+                teacher.Select
+                teacher.Cells(rcount + 1, 2).Select
+                Selection.PasteSpecial Paste:=xlPasteAll, Operation:=xlNone, SkipBlanks:= _
+                    False, Transpose:=False
+                Application.CutCopyMode = False
+                
+            End If
+        
+        Next
+        
+        '新增圖表
+        teacher.Cells(3, 1).Select
+        Set targetc = teacher.Shapes.AddChart.Chart
+        
+        With targetc
+            .Parent.Left = Range("B3").Left
+            .Parent.Top = Range("B3").Top
+            .Parent.Width = 28.3465 * 17.99
+            .Parent.Height = 28.3465 * 9.38
+            .SetSourceData Source:=Range("" & teachernamestr & "!" & "$B$21:$C$33")
+            .ChartType = xlLineMarkers
+        End With
+        
+        '設定格式
+        With teacher.Range("A1:C1")
+            .Interior.Color = RGB(146, 205, 220)
+            .HorizontalAlignment = xlCenter
+            .Font.Bold = True
+            .Font.Size = 14
+        End With
+        
+        With teacher.Range("M1")
+            .Interior.Color = RGB(228, 223, 236)
+            .HorizontalAlignment = xlCenter
+            .Font.Name = "微軟正黑體"
+        End With
+        
+        With teacher.Range("A21")
+            .Interior.Color = RGB(228, 223, 236)
+            .HorizontalAlignment = xlCenter
+            .Font.Name = "微軟正黑體"
+        End With
+        
+        teacher.Columns("A:AY").ColumnWidth = 9
+        
+    Next
+    
+    Application.ScreenUpdating = True
+    
+    Set teachername = Nothing
+    Set teacherdata = Nothing
+    Set teacher = Nothing
+    
+End Sub
